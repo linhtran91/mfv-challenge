@@ -1,0 +1,14 @@
+server:
+  host: localhost
+  port: 8080
+
+db:
+  host: localhost
+  port: 5432
+  database: aspire-lite
+  user: tester
+  password: 246357
+
+jwt:
+  secret: 432hjsa92l
+  duration: 60m

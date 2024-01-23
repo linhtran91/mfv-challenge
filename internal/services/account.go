@@ -1,17 +1,41 @@
 package services
 
 import (
+	"context"
+	"mfv-challenge/internal/constants"
+	"mfv-challenge/internal/usecases"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type account struct {
-	accountRepo AccountRepository
+	accountUC AccountUsecase
 }
 
-type AccountRepository interface{}
-
-func NewAccount(accountRepository AccountRepository) *account {
-	return &account{accountRepo: accountRepository}
+type AccountUsecase interface {
+	Get(ctx context.Context, id int64) (*usecases.Account, error)
 }
 
-func (s *account) Get(w http.ResponseWriter, r *http.Request) {}
+func NewAccount(accountUC AccountUsecase) *account {
+	return &account{accountUC: accountUC}
+}
+
+func (s *account) Get(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), constants.DefaultTimeout)
+	defer cancel()
+
+	inputs := mux.Vars(r)
+	userID, err := strconv.Atoi(inputs["account_id"])
+	if err != nil {
+		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	response, err := s.accountUC.Get(ctx, int64(userID))
+	if err != nil {
+		writeErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	writeOKResponse(w, response)
+}

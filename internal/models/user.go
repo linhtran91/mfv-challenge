@@ -8,6 +8,12 @@ type User struct {
 	Password string
 }
 
+type UserAccount struct {
+	ID        int64
+	Username  string
+	AccountID int64
+}
+
 type Account struct {
 	ID      int64
 	Name    string

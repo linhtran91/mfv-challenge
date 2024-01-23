@@ -30,9 +30,17 @@ func (r *user) GetCredential(ctx context.Context, username string) (*models.User
 	return user, nil
 }
 
-func (r *user) GetDetail(ctx context.Context, id int64) (string, []int64, error) {
-
-	return "", nil, nil
+func (r *user) GetDetail(ctx context.Context, id int64) ([]*models.UserAccount, error) {
+	var result []*models.UserAccount
+	if err := r.db.WithContext(ctx).Table(`users`).
+		Select(`users.id, users.username, accounts.id as account_id`).
+		Joins(`JOIN accounts ON users.id = accounts.user_id`).
+		Where(`users.id = ?`, id).
+		Order(`accounts.id asc`).
+		Find(&result).Error; err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (r *user) ListAccount(ctx context.Context, id int64) ([]*models.Account, error) {
@@ -46,66 +54,3 @@ func (r *user) ListAccount(ctx context.Context, id int64) ([]*models.Account, er
 	}
 	return result, nil
 }
-
-// func (r *loan) Create(ctx context.Context, loan *models.Loan, repayments []*models.Repayment) (int64, error) {
-// 	if err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-// 		if err := tx.Create(&loan).Error; err != nil {
-// 			return err
-// 		}
-
-// 		for i := range repayments {
-// 			repayments[i].LoanID = loan.ID
-// 		}
-
-// 		if err := tx.CreateInBatches(repayments, 50).Error; err != nil {
-// 			return err
-// 		}
-// 		return nil
-// 	}); err != nil {
-// 		return -1, err
-// 	}
-// 	return loan.ID, nil
-// }
-
-// func (r *loan) Approve(ctx context.Context, loanID int64, at time.Time) error {
-// 	if err := r.db.WithContext(ctx).
-// 		Model(&models.Loan{}).
-// 		Where("id = ?", loanID).
-// 		Updates(map[string]interface{}{
-// 			"status":     constants.APPROVED,
-// 			"updated_at": at,
-// 		}).Error; err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-// func (r *loan) View(ctx context.Context, customerID int64, limit, offset int) ([]*models.Loan, error) {
-// 	var result []*models.Loan
-// 	err := r.db.WithContext(ctx).
-// 		Model(&models.Loan{}).
-// 		Where("customer_id = ?", customerID).
-// 		Order("scheduled_date desc").
-// 		Limit(limit).
-// 		Offset(offset).
-// 		Find(&result).Error
-// 	if err != nil {
-// 		if err == gorm.ErrRecordNotFound {
-// 			return nil, constants.ErrorRecordNotFound
-// 		}
-// 		return nil, err
-// 	}
-// 	return result, nil
-// }
-
-// func (r *loan) UpdateStatus(ctx context.Context, loanID int64, at time.Time) error {
-// 	if err := r.db.WithContext(ctx).Model(&models.Loan{}).
-// 		Where("id = ?", loanID).
-// 		Updates(map[string]interface{}{
-// 			"status":     constants.PAID,
-// 			"updated_at": at,
-// 		}).Error; err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }

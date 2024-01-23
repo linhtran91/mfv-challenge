@@ -13,6 +13,7 @@ import (
 	"mfv-challenge/internal/must"
 	"mfv-challenge/internal/repositories"
 	"mfv-challenge/internal/services"
+	"mfv-challenge/internal/usecases"
 
 	"github.com/gorilla/mux"
 )
@@ -41,10 +42,14 @@ func NewServer(cfg *config.Config) *http.Server {
 	transactionRepository := repositories.NewTransaction(db)
 	accountRepository := repositories.NewAccount(db)
 
+	userUC := usecases.NewUser(userRepository)
+	accountUC := usecases.NewAccount(accountRepository)
+	transactionUC := usecases.NewTransaction(transactionRepository, accountRepository)
+
 	// tokenBuilder := token.NewjwtHMACBuilder(cfg.JWT.Secret, cfg.JWT.Duration)
-	userService := services.NewUser(userRepository)
-	accountService := services.NewAccount(accountRepository)
-	transactionService := services.NewTransaction(transactionRepository)
+	userService := services.NewUser(userUC)
+	accountService := services.NewAccount(accountUC)
+	transactionService := services.NewTransaction(transactionUC)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/users/{user_id}/transactions", transactionService.List).Methods("GET")

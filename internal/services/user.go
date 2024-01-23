@@ -12,16 +12,16 @@ import (
 )
 
 type user struct {
-	userRepo UserRepository
+	userUsecase UserUsecase
 }
 
-type UserRepository interface {
-	GetDetail(ctx context.Context, id int64) (string, []int64, error)
+type UserUsecase interface {
+	GetDetail(ctx context.Context, id int64) (*usecases.UserAccounts, error)
 	ListAccount(ctx context.Context, id int64) ([]*models.Account, error)
 }
 
-func NewUser(userRepository UserRepository) *user {
-	return &user{userRepo: userRepository}
+func NewUser(userUsecase UserUsecase) *user {
+	return &user{userUsecase: userUsecase}
 }
 
 func (s *user) Get(w http.ResponseWriter, r *http.Request) {
@@ -34,16 +34,12 @@ func (s *user) Get(w http.ResponseWriter, r *http.Request) {
 		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	name, transactions, err := s.userRepo.GetDetail(ctx, int64(userID))
+	response, err := s.userUsecase.GetDetail(ctx, int64(userID))
 	if err != nil {
 		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	writeOKResponse(w, usecases.UserAccounts{
-		ID:       int64(userID),
-		Username: name,
-		Accounts: transactions,
-	})
+	writeOKResponse(w, response)
 }
 
 func (s *user) ListAccounts(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +53,7 @@ func (s *user) ListAccounts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accounts, err := s.userRepo.ListAccount(ctx, int64(userID))
+	accounts, err := s.userUsecase.ListAccount(ctx, int64(userID))
 	if err != nil {
 		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
 		return

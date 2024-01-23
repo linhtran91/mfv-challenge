@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"mfv-challenge/internal/constants"
 	"mfv-challenge/internal/models"
 
 	"gorm.io/gorm"
@@ -19,7 +20,11 @@ func (r *account) Get(ctx context.Context, id int64) (*models.Account, error) {
 	var result *models.Account
 	if err := r.db.WithContext(ctx).
 		Model(&models.Account{}).
-		Where(`id = ?`, id).First(&result).Error; err != nil {
+		Where(`id = ?`, id).
+		First(&result).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, constants.ErrorRecordNotFound
+		}
 		return nil, err
 	}
 	return result, nil
@@ -33,6 +38,9 @@ func (r *account) GetByUserIDAndAccountID(ctx context.Context, userID, accountID
 		Where(`accounts.id = ?`, accountID).
 		Where(`users.id = ?`, userID).
 		First(&result).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, constants.ErrorRecordNotFound
+		}
 		return nil, err
 	}
 	return result, nil

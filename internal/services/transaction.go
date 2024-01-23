@@ -32,7 +32,7 @@ func (s *transaction) List(w http.ResponseWriter, r *http.Request) {
 	inputs := mux.Vars(r)
 	userID, err := strconv.Atoi(inputs["user_id"])
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
@@ -40,7 +40,7 @@ func (s *transaction) List(w http.ResponseWriter, r *http.Request) {
 	limit, offset := getLimitOffset(r.URL.Query())
 	response, err := s.transactionUC.List(ctx, int64(userID), int64(accountID), limit, offset)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, err.Error())
+		writeErrorResponse(w, err, http.StatusInternalServerError, err.Error())
 		return
 	}
 	writeOKResponse(w, response)
@@ -52,13 +52,13 @@ func (s *transaction) Create(w http.ResponseWriter, r *http.Request) {
 	inputs := mux.Vars(r)
 	userID, err := strconv.Atoi(inputs["user_id"])
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
 	var current *usecases.TransactionRequest
 	if err := json.NewDecoder(r.Body).Decode(&current); err != nil {
-		writeErrorResponse(w, http.StatusBadRequest, "Bad request")
+		writeErrorResponse(w, err, http.StatusBadRequest, "Bad request")
 		return
 	}
 	tran := &models.Transaction{
@@ -69,7 +69,7 @@ func (s *transaction) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	response, err := s.transactionUC.Create(ctx, int64(userID), tran)
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	writeOKResponse(w, response)

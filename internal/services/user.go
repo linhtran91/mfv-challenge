@@ -31,12 +31,12 @@ func (s *user) Get(w http.ResponseWriter, r *http.Request) {
 	inputs := mux.Vars(r)
 	userID, err := strconv.Atoi(inputs["user_id"])
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	response, err := s.userUsecase.GetDetail(ctx, int64(userID))
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	writeOKResponse(w, response)
@@ -49,13 +49,13 @@ func (s *user) ListAccounts(w http.ResponseWriter, r *http.Request) {
 	inputs := mux.Vars(r)
 	userID, err := strconv.Atoi(inputs["user_id"])
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
 	accounts, err := s.userUsecase.ListAccount(ctx, int64(userID))
 	if err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 

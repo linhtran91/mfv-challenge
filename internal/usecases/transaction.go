@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"context"
-	"errors"
 	"mfv-challenge/internal/constants"
 	"mfv-challenge/internal/models"
 	"time"
@@ -47,7 +46,7 @@ type TransactionResponse struct {
 func (u *transaction) Create(ctx context.Context, userID int64, tran *models.Transaction) (*TransactionResponse, error) {
 	// Deposit (money coming into your bank account)
 	// Withdrawal (money going out of your bank account).
-	account, err := u.accountRepo.Get(ctx, tran.AccountID)
+	account, err := u.accountRepo.GetByUserIDAndAccountID(ctx, userID, tran.AccountID)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +59,7 @@ func (u *transaction) Create(ctx context.Context, userID int64, tran *models.Tra
 	}
 
 	if account.Balance <= 0 {
-		return nil, errors.New("balance is lesser than withdraw amount")
+		return nil, constants.ErrorWithdraw
 	}
 	if err := u.transactionRepo.Create(ctx, account, tran); err != nil {
 		return nil, err

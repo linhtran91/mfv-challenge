@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"mfv-challenge/internal/constants"
 	"net/http"
 )
 
@@ -10,16 +11,23 @@ func writeOKResponse(w http.ResponseWriter, m interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(m); err != nil {
-		writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, nil, http.StatusInternalServerError, "Internal Server Error")
 	}
 }
 
 // Writes the error response as a Standard API JSON response with a response code
-func writeErrorResponse(w http.ResponseWriter, errorCode int, errorMsg string) {
+func writeErrorResponse(w http.ResponseWriter, err error, errorCode int, errorMsg string) {
+	switch err {
+	case constants.ErrorRecordNotFound:
+		errorCode = http.StatusNotFound
+		errorMsg = "Not Found"
+	case constants.ErrorWithdraw:
+		errorCode = http.StatusBadRequest
+		errorMsg = "Not balanced amount"
+	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(errorCode)
-	json.NewEncoder(w).
-		Encode(&JsonErrorResponse{Error: &ApiError{Status: errorCode, Message: errorMsg}})
+	json.NewEncoder(w).Encode(&JsonErrorResponse{Error: &ApiError{Status: errorCode, Message: errorMsg}})
 }
 
 type JsonErrorResponse struct {

@@ -110,6 +110,11 @@
 
 ## Requirements
 
+There are three APIs below. (These are actual API, so you can access them.)
+Please create a program with some of these APIs. It should take a user ID as input and return the name, account list and balances of that user. In addition, the program should be designed and implemented with maintainability in mind.
+
+You can use Golang to do this programming.
+
 ```sh
 - Web API
   - https://mfx-recruit-dev.herokuapp.com/users/1

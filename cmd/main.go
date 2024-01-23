@@ -10,6 +10,9 @@ import (
 	"time"
 
 	"mfv-challenge/config"
+	"mfv-challenge/internal/must"
+	"mfv-challenge/internal/repositories"
+	"mfv-challenge/internal/services"
 
 	"github.com/gorilla/mux"
 )
@@ -29,25 +32,26 @@ func main() {
 }
 
 func NewServer(cfg *config.Config) *http.Server {
-	// db, err := must.Connect("postgres", cfg.BuildDSN())
-	// if err != nil {
-	// 	panic(err)
-	// }
+	db, err := must.Connect("postgres", cfg.BuildDSN())
+	if err != nil {
+		panic(err)
+	}
 
-	// repaymentRepository := repositories.NewRepayment(db)
-	// loanRepository := repositories.NewLoan(db)
-	// customerRepository := repositories.NewCustomer(db)
+	userRepository := repositories.NewUser(db)
+	transactionRepository := repositories.NewTransaction(db)
+	accountRepository := repositories.NewAccount(db)
 
-	// repaymentHandler := handlers.NewRepayment(repaymentRepository, loanRepository)
-	// tokenBuilder := token.NewJWTTokenBuilder(cfg.JWT.Secret, cfg.JWT.Duration)
-	// loanHandler := handlers.NewLoan(loanRepository, tokenBuilder, customerRepository)
-	// authenHandler := handlers.NewAuthenticator(customerRepository, tokenBuilder)
+	// tokenBuilder := token.NewjwtHMACBuilder(cfg.JWT.Secret, cfg.JWT.Duration)
+	userService := services.NewUser(userRepository)
+	accountService := services.NewAccount(accountRepository)
+	transactionService := services.NewTransaction(transactionRepository)
 
 	router := mux.NewRouter()
-	// router.HandleFunc("/api/customers/{customer_id}/loans", loanHandler.CreateLoan).Methods("POST")
-	// router.HandleFunc("/api/customers/{customer_id}/loans", loanHandler.List).Methods("GET")
-	// router.HandleFunc("/api/loans/{loan_id}/approve", loanHandler.ApproveLoan).Methods("PUT")
-	// router.HandleFunc("/api/repayments/{repayment_id}", repaymentHandler.SubmitRepay).Methods("PUT")
+	router.HandleFunc("/api/users/{user_id}/transactions", transactionService.List).Methods("GET")
+	router.HandleFunc("/api/users/{user_id}/transactions", transactionService.Create).Methods("POST")
+	router.HandleFunc("/api/users/{user_id}", userService.Get).Methods("GET")
+	router.HandleFunc("/api/users/{user_id}/accounts", userService.ListAccounts).Methods("GET")
+	router.HandleFunc("/api/accounts/{account_id}", accountService.Get).Methods("GET")
 	// router.HandleFunc("/api/login", authenHandler.Login).Methods("POST")
 
 	return &http.Server{

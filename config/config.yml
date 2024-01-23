@@ -5,7 +5,7 @@ server:
 db:
   host: localhost
   port: 5432
-  database: aspire-lite
+  database: mfv-challenge
   user: tester
   password: 246357
 

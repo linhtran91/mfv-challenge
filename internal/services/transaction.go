@@ -32,7 +32,7 @@ func (s *transaction) List(w http.ResponseWriter, r *http.Request) {
 	inputs := mux.Vars(r)
 	userID, err := strconv.Atoi(inputs["user_id"])
 	if err != nil {
-		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusBadRequest, "Bad Request")
 		return
 	}
 
@@ -52,7 +52,7 @@ func (s *transaction) Create(w http.ResponseWriter, r *http.Request) {
 	inputs := mux.Vars(r)
 	userID, err := strconv.Atoi(inputs["user_id"])
 	if err != nil {
-		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusBadRequest, "Bad Request")
 		return
 	}
 

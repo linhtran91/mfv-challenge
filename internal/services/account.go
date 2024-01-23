@@ -29,7 +29,7 @@ func (s *account) Get(w http.ResponseWriter, r *http.Request) {
 	inputs := mux.Vars(r)
 	userID, err := strconv.Atoi(inputs["account_id"])
 	if err != nil {
-		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
+		writeErrorResponse(w, err, http.StatusBadRequest, "Bad Request")
 		return
 	}
 	response, err := s.accountUC.Get(ctx, int64(userID))

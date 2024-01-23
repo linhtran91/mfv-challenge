@@ -2,9 +2,12 @@ test:
 	go test ./...
 
 mock:
-	mockgen -source=internals/handlers/loan.go -destination=mocks/handlers/loan.go
-	mockgen -source=internals/handlers/repayment.go -destination=mocks/handlers/repayment.go
-	mockgen -source=internals/handlers/customer.go -destination=mocks/handlers/customer.go
+	mockgen -source=internal/services/account.go -destination=mocks/services/account.go
+	mockgen -source=internal/services/transaction.go -destination=mocks/services/transaction.go
+	mockgen -source=internal/services/user.go -destination=mocks/services/user.go
+	mockgen -source=internal/usecases/account.go -destination=mocks/usecases/account.go
+	mockgen -source=internal/usecases/transaction.go -destination=mocks/usecases/transaction.go
+	mockgen -source=internal/usecases/user.go -destination=mocks/usecases/user.go
 
 dep:
 	go mod tidy

@@ -1,24 +1,10 @@
 package services
 
 import (
-	"aspire-lite/internals/constants"
+	"mfv-challenge/internal/constants"
 	"net/url"
 	"strconv"
-	"time"
-
-	gonanoid "github.com/matoous/go-nanoid/v2"
 )
-
-var defaultAlphabel = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-func parseDate(s string) (time.Time, error) {
-	return time.Parse(time.DateOnly, s)
-}
-
-func generateUUID() string {
-	id, _ := gonanoid.Generate(defaultAlphabel, constants.LengthOfID)
-	return id
-}
 
 func getLimitOffset(values url.Values) (int, int) {
 	page := getValueFromUrl(values, "page", constants.DefaultPage)

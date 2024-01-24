@@ -12,7 +12,7 @@ import (
 type Config struct {
 	Server *Server `yaml:"server" mapstructure:"server"`
 	DB     *DB     `yaml:"db"  mapstructure:"db"`
-	JWT    *JWT    `yaml:"jwt"  mapstructure:"jwt"`
+	Auth   *Auth   `yaml:"auth"  mapstructure:"auth"`
 }
 
 type Server struct {
@@ -28,9 +28,11 @@ type DB struct {
 	Password string `yaml:"password" mapstructure:"password"`
 }
 
-type JWT struct {
-	Secret   string        `json:"secret" mapstructure:"secret"`
-	Duration time.Duration `json:"duration" mapstructure:"duration"`
+type Auth struct {
+	Secret    string        `json:"secret" mapstructure:"secret"`
+	Duration  time.Duration `json:"duration" mapstructure:"duration"`
+	Enabled   bool          `json:"enabled" mapstructure:"enabled"`
+	Whitelist []string      `json:"whitelist" mapstructure:"whitelist"`
 }
 
 func (cfg *Config) BuildDSN() string {

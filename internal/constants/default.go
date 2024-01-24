@@ -8,6 +8,7 @@ import (
 var (
 	ErrorRecordNotFound = errors.New("record not found")
 	ErrorWithdraw       = errors.New("balance is lesser than withdraw amount")
+	ErrUnauthorized     = errors.New("Unauthorized")
 )
 
 const LengthOfID = 16
@@ -20,7 +21,7 @@ const MaximumSize = 1e5
 const DefaultTimeout = 15 * time.Second
 
 const AuthorizationHeader = "Authorization"
-const AuthorizationKey = "Bearer"
+const AuthorizationKey = "Bearer "
 
 const Deposit = "deposit"
 const Withdraw = "withdraw"

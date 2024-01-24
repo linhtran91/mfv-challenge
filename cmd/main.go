@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"mfv-challenge/config"
+	"mfv-challenge/internal/middleware"
 	"mfv-challenge/internal/must"
 	"mfv-challenge/internal/repositories"
 	"mfv-challenge/internal/services"
+	"mfv-challenge/internal/token"
 	"mfv-challenge/internal/usecases"
 
 	"github.com/gorilla/mux"
@@ -46,8 +48,8 @@ func NewServer(cfg *config.Config) *http.Server {
 	accountUC := usecases.NewAccount(accountRepository)
 	transactionUC := usecases.NewTransaction(transactionRepository, accountRepository)
 
-	// tokenBuilder := token.NewjwtHMACBuilder(cfg.JWT.Secret, cfg.JWT.Duration)
-	userService := services.NewUser(userUC)
+	tokenBuilder := token.NewjwtHMACBuilder(cfg.Auth.Secret, cfg.Auth.Duration)
+	userService := services.NewUser(userUC, tokenBuilder)
 	accountService := services.NewAccount(accountUC)
 	transactionService := services.NewTransaction(transactionUC)
 
@@ -57,7 +59,10 @@ func NewServer(cfg *config.Config) *http.Server {
 	router.HandleFunc("/api/users/{user_id}", userService.Get).Methods("GET")
 	router.HandleFunc("/api/users/{user_id}/accounts", userService.ListAccounts).Methods("GET")
 	router.HandleFunc("/api/accounts/{account_id}", accountService.Get).Methods("GET")
-	// router.HandleFunc("/api/login", authenHandler.Login).Methods("POST")
+	router.HandleFunc("/api/login", userService.Login).Methods("POST")
+
+	authMiddleware := middleware.NewAuth(tokenBuilder, cfg.Auth.Whitelist, cfg.Auth.Enabled)
+	router.Use(authMiddleware.Middleware)
 
 	return &http.Server{
 		Addr:    cfg.Server.Host + ":" + cfg.Server.Port,

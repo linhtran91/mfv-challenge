@@ -5,8 +5,8 @@ go 1.21.4
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/gorilla/mux v1.8.1
-	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/spf13/viper v1.18.2
+	go.uber.org/mock v0.4.0
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 )

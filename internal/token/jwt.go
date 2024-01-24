@@ -9,7 +9,7 @@ import (
 )
 
 type TokenClaims struct {
-	CustomerID int64 `json:"customer_id"`
+	UserID int64 `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
@@ -25,10 +25,10 @@ func NewjwtHMACBuilder(secret string, duration time.Duration) *jwtHMACBuilder {
 	}
 }
 
-func (b *jwtHMACBuilder) Encode(customerID int64) (string, error) {
+func (b *jwtHMACBuilder) Encode(userID int64) (string, error) {
 	now := time.Now()
 	claims := TokenClaims{
-		CustomerID: customerID,
+		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(now.Add(b.duration)),
 			IssuedAt:  jwt.NewNumericDate(now),
@@ -50,7 +50,7 @@ func (b *jwtHMACBuilder) Decode(tokenString string) (int64, error) {
 		return -1, err
 	}
 	if claims, ok := token.Claims.(*TokenClaims); ok {
-		return claims.CustomerID, nil
+		return claims.UserID, nil
 	}
 	return -1, errors.New("unknown claims type, cannot proceed")
 }

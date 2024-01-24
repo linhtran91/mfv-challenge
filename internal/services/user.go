@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"mfv-challenge/internal/constants"
 	"mfv-challenge/internal/models"
 	"mfv-challenge/internal/usecases"
@@ -13,15 +14,24 @@ import (
 
 type user struct {
 	userUsecase UserUsecase
+	encoder     TokenEncoder
 }
 
 type UserUsecase interface {
 	GetDetail(ctx context.Context, id int64) (*usecases.UserAccounts, error)
 	ListAccount(ctx context.Context, id int64) ([]*models.Account, error)
+	ComparePassword(ctx context.Context, info usecases.LoginInfo) (bool, int64, error)
 }
 
-func NewUser(userUsecase UserUsecase) *user {
-	return &user{userUsecase: userUsecase}
+type TokenEncoder interface {
+	Encode(userID int64) (string, error)
+}
+
+func NewUser(userUsecase UserUsecase, encoder TokenEncoder) *user {
+	return &user{
+		userUsecase: userUsecase,
+		encoder:     encoder,
+	}
 }
 
 func (s *user) Get(w http.ResponseWriter, r *http.Request) {
@@ -69,4 +79,34 @@ func (s *user) ListAccounts(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	writeOKResponse(w, result)
+}
+
+func (s *user) Login(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), constants.DefaultTimeout)
+	defer cancel()
+	var user usecases.LoginInfo
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		writeErrorResponse(w, err, http.StatusBadRequest, "Bad request")
+		return
+	}
+
+	isValid, id, err := s.userUsecase.ComparePassword(ctx, user)
+	if err != nil {
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	if !isValid {
+		writeErrorResponse(w, err, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	token, err := s.encoder.Encode(id)
+	if err != nil {
+		writeErrorResponse(w, err, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+	writeOKResponse(w, map[string]interface{}{
+		"token": token,
+	})
 }

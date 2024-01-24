@@ -9,6 +9,9 @@ db:
   user: tester
   password: 246357
 
-jwt:
+auth:
   secret: 432hjsa92l
   duration: 60m
+  enabled: true
+  whitelist:
+  - /api/login

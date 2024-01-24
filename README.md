@@ -8,6 +8,21 @@ docker-compose -f docker-compose.yml up
 ```
 The database schema will be run by the migration in the docker compose with the mock data for users and accounts as file [mock data](./migrations/000002_mock_data.up.sql)
 
+To set the application mannually, pull the depedencies by command `make dep`, install and run Postgres. After that, install the [go-migrate](https://github.com/golang-migrate/migrate) to update the database schema.
+
+Then running the one of 2 commands to migrate the schema & mock data
+
+```sh
+$ migrate -source file://path/to/migrations -database postgres://localhost:5432/database up 3
+```
+
+```sh
+$ docker run -v {{ migration dir }}:/migrations --network host migrate/migrate
+    -path=/migrations/ -database postgres://localhost:5432/database up 3
+```
+
+The migration files are on [this directory](./migrations/)
+
 ## APIs
 
 As the requirements, it has 3 APIs that follows the coding challenge as below

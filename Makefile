@@ -14,4 +14,4 @@ dep:
 	go mod vendor
 
 init-db:
-	migrate create -ext sql -dir migrations -seq init_tables
+	migrate create -ext sql -dir migrations -seq mock_data

@@ -10,6 +10,11 @@ services:
       - POSTGRES_USER=tester
       - POSTGRES_PASSWORD=246357
       - POSTGRES_DB=mfv-challenge
+    healthcheck:
+        test: pg_isready -U mydbuser -d mydbname
+        interval: 30s
+        timeout: 10s
+        retries: 5
   migrate:
     image: migrate/migrate
     volumes:
@@ -17,6 +22,9 @@ services:
     command: ["-path", "/migrations", "-database",  "postgres://tester:246357@postgres:5432/mfv-challenge?sslmode=disable", "up", "3"]
     depends_on:
       - postgres
+    links:
+      - postgres
+    restart: on-failure
   api:
     build:
       context: .
@@ -29,4 +37,5 @@ services:
       - SERVER_HOST=0.0.0.0
     depends_on:
       - postgres
+    restart: on-failure
     command: [ "/app/main" ]

@@ -12,6 +12,6 @@ db:
 auth:
   secret: 432hjsa92l
   duration: 60m
-  enabled: true
+  enabled: false
   whitelist:
   - /api/login

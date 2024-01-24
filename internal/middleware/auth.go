@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"mfv-challenge/internal/constants"
 	"net/http"
 	"strings"
@@ -17,11 +16,6 @@ type TokenDecoder interface {
 	Decode(tokenString string) (int64, error)
 }
 
-type contextKey string
-
-const authenticatedUserKey contextKey = "X-UserID"
-
-// Middleware function, which will be called for each request
 func (auth *Authenticator) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !auth.enabled {
@@ -35,17 +29,13 @@ func (auth *Authenticator) Middleware(next http.Handler) http.Handler {
 		}
 		token := r.Header.Get(constants.AuthorizationHeader)
 		token = strings.ReplaceAll(token, constants.AuthorizationKey, "")
-		userID, err := auth.decoder.Decode(token)
+		_, err := auth.decoder.Decode(token)
 		if err != nil {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
 
-		//create a new request context containing the authenticated user
-		ctxWithUser := context.WithValue(r.Context(), authenticatedUserKey, userID)
-		//create a new request using that new context
-		rWithUser := r.WithContext(ctxWithUser)
-		next.ServeHTTP(w, rWithUser)
+		next.ServeHTTP(w, r)
 	})
 }
 

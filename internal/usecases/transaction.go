@@ -24,8 +24,22 @@ func NewTransaction(transactionRepo TransactionRepository, accountRepo AccountRe
 	}
 }
 
-func (u *transaction) List(ctx context.Context, userID, accountID int64, limit, offset int) ([]*models.Transaction, error) {
-	return u.transactionRepo.List(ctx, userID, accountID, limit, offset)
+func (u *transaction) List(ctx context.Context, userID, accountID int64, limit, offset int) ([]*TransactionResponse, error) {
+	transactions, err := u.transactionRepo.List(ctx, userID, accountID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*TransactionResponse, 0, len(transactions))
+	for _, tran := range transactions {
+		result = append(result, &TransactionResponse{
+			ID:              tran.ID,
+			AccountID:       tran.AccountID,
+			Amount:          tran.Amount,
+			TransactionType: tran.TransactionType,
+			CreatedAt:       tran.CreatedAt,
+		})
+	}
+	return result, nil
 }
 
 type TransactionRequest struct {
@@ -37,9 +51,9 @@ type TransactionRequest struct {
 type TransactionResponse struct {
 	ID              int64     `json:"id"`
 	AccountID       int64     `json:"account_id"`
-	Amount          float64   `json:"amount"`
-	Bank            string    `json:"bank"`
-	TransactionType string    `json:"transaction_type"`
+	Amount          float64   `json:"amount,omitempty"`
+	Bank            string    `json:"bank,omitempty"`
+	TransactionType string    `json:"transaction_type,omitempty"`
 	CreatedAt       time.Time `json:"created_at"`
 }
 
@@ -56,6 +70,8 @@ func (u *transaction) Create(ctx context.Context, userID int64, tran *models.Tra
 		account.Balance += tran.Amount
 	case constants.Withdraw:
 		account.Balance -= tran.Amount
+	default:
+		return nil, constants.ErrUnsupportedTransactionType
 	}
 
 	if account.Balance <= 0 {

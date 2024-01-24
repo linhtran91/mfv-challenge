@@ -18,7 +18,7 @@ type transaction struct {
 }
 
 type TransactionUsecase interface {
-	List(ctx context.Context, userID, accountID int64, limit, offset int) ([]*models.Transaction, error)
+	List(ctx context.Context, userID, accountID int64, limit, offset int) ([]*usecases.TransactionResponse, error)
 	Create(ctx context.Context, userID int64, tran *models.Transaction) (*usecases.TransactionResponse, error)
 }
 

@@ -40,6 +40,21 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 	return m.recorder
 }
 
+// GetCredential mocks base method.
+func (m *MockUserRepository) GetCredential(ctx context.Context, username string) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCredential", ctx, username)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCredential indicates an expected call of GetCredential.
+func (mr *MockUserRepositoryMockRecorder) GetCredential(ctx, username any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredential", reflect.TypeOf((*MockUserRepository)(nil).GetCredential), ctx, username)
+}
+
 // GetDetail mocks base method.
 func (m *MockUserRepository) GetDetail(ctx context.Context, id int64) ([]*models.UserAccount, error) {
 	m.ctrl.T.Helper()

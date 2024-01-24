@@ -34,18 +34,20 @@ func (r *transaction) Create(ctx context.Context, account *models.Account, tran 
 
 func (r *transaction) List(ctx context.Context, userID, accountID int64, limit, offset int) ([]*models.Transaction, error) {
 	var result []*models.Transaction
-	query := r.db.WithContext(ctx).Model(&models.Transaction{}).
+	query := r.db.WithContext(ctx).
+		Model(&models.Transaction{}).
 		Joins(`JOIN accounts ON transactions.account_id = accounts.id`).
-		Joins(`JOIN users ON accounts.id = users.id`).Where(`users.id = ?`, userID)
+		Joins(`JOIN users ON accounts.user_id = users.id`).
+		Where(`users.id = ?`, userID)
 	if accountID > 0 {
 		query = query.Where(`accounts.id = ?`, accountID)
 	}
 	if err := query.
 		Limit(limit).
 		Offset(offset).
-		Order(`accounts.id asc, created_at desc`).
+		Order(`transactions.id desc`).
 		Find(&result).Error; err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return result, nil
 }

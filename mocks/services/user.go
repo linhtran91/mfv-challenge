@@ -41,6 +41,22 @@ func (m *MockUserUsecase) EXPECT() *MockUserUsecaseMockRecorder {
 	return m.recorder
 }
 
+// ComparePassword mocks base method.
+func (m *MockUserUsecase) ComparePassword(ctx context.Context, info usecases.LoginInfo) (bool, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ComparePassword", ctx, info)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ComparePassword indicates an expected call of ComparePassword.
+func (mr *MockUserUsecaseMockRecorder) ComparePassword(ctx, info any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ComparePassword", reflect.TypeOf((*MockUserUsecase)(nil).ComparePassword), ctx, info)
+}
+
 // GetDetail mocks base method.
 func (m *MockUserUsecase) GetDetail(ctx context.Context, id int64) (*usecases.UserAccounts, error) {
 	m.ctrl.T.Helper()
@@ -69,4 +85,42 @@ func (m *MockUserUsecase) ListAccount(ctx context.Context, id int64) ([]*models.
 func (mr *MockUserUsecaseMockRecorder) ListAccount(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccount", reflect.TypeOf((*MockUserUsecase)(nil).ListAccount), ctx, id)
+}
+
+// MockTokenEncoder is a mock of TokenEncoder interface.
+type MockTokenEncoder struct {
+	ctrl     *gomock.Controller
+	recorder *MockTokenEncoderMockRecorder
+}
+
+// MockTokenEncoderMockRecorder is the mock recorder for MockTokenEncoder.
+type MockTokenEncoderMockRecorder struct {
+	mock *MockTokenEncoder
+}
+
+// NewMockTokenEncoder creates a new mock instance.
+func NewMockTokenEncoder(ctrl *gomock.Controller) *MockTokenEncoder {
+	mock := &MockTokenEncoder{ctrl: ctrl}
+	mock.recorder = &MockTokenEncoderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTokenEncoder) EXPECT() *MockTokenEncoderMockRecorder {
+	return m.recorder
+}
+
+// Encode mocks base method.
+func (m *MockTokenEncoder) Encode(userID int64) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Encode", userID)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Encode indicates an expected call of Encode.
+func (mr *MockTokenEncoderMockRecorder) Encode(userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encode", reflect.TypeOf((*MockTokenEncoder)(nil).Encode), userID)
 }

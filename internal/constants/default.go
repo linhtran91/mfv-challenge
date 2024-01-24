@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	ErrorRecordNotFound = errors.New("record not found")
-	ErrorWithdraw       = errors.New("balance is lesser than withdraw amount")
-	ErrUnauthorized     = errors.New("Unauthorized")
+	ErrorRecordNotFound           = errors.New("record not found")
+	ErrorWithdraw                 = errors.New("balance is lesser than withdraw amount")
+	ErrUnauthorized               = errors.New("unauthorized")
+	ErrUnsupportedTransactionType = errors.New("unsupported transaction type")
 )
 
 const LengthOfID = 16

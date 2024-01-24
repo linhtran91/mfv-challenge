@@ -24,6 +24,9 @@ func writeErrorResponse(w http.ResponseWriter, err error, errorCode int, errorMs
 	case constants.ErrorWithdraw:
 		errorCode = http.StatusBadRequest
 		errorMsg = "Not balanced amount"
+	case constants.ErrUnsupportedTransactionType:
+		errorCode = http.StatusBadRequest
+		errorMsg = err.Error()
 	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(errorCode)

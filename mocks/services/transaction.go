@@ -57,10 +57,10 @@ func (mr *MockTransactionUsecaseMockRecorder) Create(ctx, userID, tran any) *gom
 }
 
 // List mocks base method.
-func (m *MockTransactionUsecase) List(ctx context.Context, userID, accountID int64, limit, offset int) ([]*models.Transaction, error) {
+func (m *MockTransactionUsecase) List(ctx context.Context, userID, accountID int64, limit, offset int) ([]*usecases.TransactionResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", ctx, userID, accountID, limit, offset)
-	ret0, _ := ret[0].([]*models.Transaction)
+	ret0, _ := ret[0].([]*usecases.TransactionResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
